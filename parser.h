@@ -18,7 +18,7 @@
 	char* str_ncpy(char* ,char* ,uint32_t );
     uint32_t str_len(char*);
 
-    void transfer(char*);
+    void transfer(char*, uint32_t);
 	void dec_ascii(uint32_t,char*);
 	uint32_t ascii_dec(char* ,uint32_t*);
 	uint32_t ascii_hex_dec(char*,uint32_t*);

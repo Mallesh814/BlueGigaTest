@@ -5,28 +5,59 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
 #include "driverlib/interrupt.h"
+#include "driverlib/systick.h"
 #include "inc/hw_memmap.h"
+#include "driverlib/timer.h"
+#include "uartstdio.h"
 
 #include "configs.h"
 #include "parser.h"
 
-uint8_t uart_char = 0, call_parser = 0;
+
+
+uint8_t uart_char = 0, call_parser = 0, tick = 0;
+uint8_t uart_char3 = 0, call_parser1 = 0;
+char rx_str[2];
 
 int main(void)
 {
+	rx_str[0] = '\0';
+	rx_str[1] = '\0';
+
 
 	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1);
 	GPIOPinWrite(GPIO_PORTF_BASE,GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1, 0X00);	// Toggle LED0 everytime a key is pressed
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 
-	IntMasterEnable();
+    //
+    // Enable processor interrupts.
+    //
+    IntMasterEnable();
 
 	//	UART Configuration
-	uart_config();
+    //
+    // Set up the serial console to use for displaying messages.  This is
+    // just for this example program and is not needed for Timer operation.
+    //
+    InitConsole();
+    InitConsole3();
+    //
+    // Display the example setup on the console.
+    //
+    transfer("Initialization Done\n\r", UART0_BASE);
 
-	transfer("\033[2J\033[H");									// Clear Screen
+    while (1){
+
+        transfer("AT\r\n", UART3_BASE);
+    	if(call_parser1){
+    		call_parser1 = 0;
+    		transfer("Character Received", UART0_BASE);
+    		transfer(rx_str, UART0_BASE);
+    		transfer("\n\r", UART0_BASE);
+
+    	}
+    }
 
 
 }
@@ -41,5 +72,17 @@ void isr_uart()
 			uart_char = UARTCharGet(UART0_BASE);
 			call_parser = 1;
 		}
-	}
+}
+
+void isr_uart3()
+{
+	uint32_t u3status;
+	u3status = UARTIntStatus(UART3_BASE,true);
+	UARTIntClear(UART3_BASE,u3status);
+	if(UARTCharsAvail(UART3_BASE))
+		{
+			uart_char3 = UARTCharGet(UART3_BASE);
+			UARTCharPut(UART0_BASE, uart_char3);
+		}
+}
 

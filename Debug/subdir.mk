@@ -7,19 +7,22 @@ C_SRCS += \
 ../configs.c \
 ../main.c \
 ../parser.c \
-../startup_gcc.c 
+../startup_gcc.c \
+../uartstdio.c 
 
 OBJS += \
 ./configs.o \
 ./main.o \
 ./parser.o \
-./startup_gcc.o 
+./startup_gcc.o \
+./uartstdio.o 
 
 C_DEPS += \
 ./configs.d \
 ./main.d \
 ./parser.d \
-./startup_gcc.d 
+./startup_gcc.d \
+./uartstdio.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

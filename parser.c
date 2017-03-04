@@ -29,12 +29,13 @@ uint32_t str_len(char* str)
 
 //****** Function that sends the received STRING to UART interface
 
-void transfer(char* data){
+void transfer(char* data, uint32_t uart_base){
 		while (*data){
-			UARTCharPut(UART0_BASE, *data);
+			UARTCharPut(uart_base, *data);
 			data++;
 		}
-	}
+
+}
 
 void dec_ascii(uint32_t num,char*pasc){
 	uint32_t j;

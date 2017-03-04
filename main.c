@@ -48,15 +48,7 @@ int main(void)
     transfer("Initialization Done\n\r", UART0_BASE);
 
     while (1){
-
-        transfer("AT\r\n", UART3_BASE);
-    	if(call_parser1){
-    		call_parser1 = 0;
-    		transfer("Character Received", UART0_BASE);
-    		transfer(rx_str, UART0_BASE);
-    		transfer("\n\r", UART0_BASE);
-
-    	}
+    	;
     }
 
 
@@ -83,6 +75,7 @@ void isr_uart3()
 		{
 			uart_char3 = UARTCharGet(UART3_BASE);
 			UARTCharPut(UART0_BASE, uart_char3);
+			GPIOPinWrite(GPIO_PORTF_BASE,GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1, uart_char3);	// Toggle LED0 everytime a key is pressed
 		}
 }
 

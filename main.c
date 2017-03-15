@@ -13,16 +13,15 @@
 #include "configs.h"
 #include "parser.h"
 
-
-
 uint8_t uart_char = 0, call_parser = 0, tick = 0;
 uint8_t uart_char3 = 0, call_parser1 = 0;
-char rx_str[2];
 
 int main(void)
 {
-	rx_str[0] = '\0';
-	rx_str[1] = '\0';
+
+	char tx_str[] = "0123456789ABCDEF";
+
+	uint32_t command;
 
 
 	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
@@ -46,9 +45,15 @@ int main(void)
     // Display the example setup on the console.
     //
     transfer("Initialization Done\n\r", UART0_BASE);
+    transfer(tx_str, UART3_BASE);
 
     while (1){
-    	;
+    	if(call_parser){
+    		call_parser = 0;
+    	    transfer(tx_str, UART3_BASE);
+
+    	}
+
     }
 
 

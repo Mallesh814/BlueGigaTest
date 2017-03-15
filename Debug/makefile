@@ -22,19 +22,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: Open_Day.elf
+all: BlueGigaTest.elf
 
 # Tool invocations
-Open_Day.elf: $(OBJS) $(USER_OBJS)
+BlueGigaTest.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross GCC Linker'
-	arm-none-eabi-gcc -L$(HOME)/tivaware/driverlib/gcc -Wl,--static,--gc-sections,-T../ldStart.ld -mthumb -mcpu=cortex-m4 -o "Open_Day.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -L$(HOME)/tivaware/driverlib/gcc -Wl,--static,--gc-sections,-T../ldStart.ld -mthumb -mcpu=cortex-m4 -o "BlueGigaTest.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) Open_Day.elf
+	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) BlueGigaTest.elf
 	-@echo ' '
 
 .PHONY: all clean dependents

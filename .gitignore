@@ -3,6 +3,12 @@
 *.ko
 *.obj
 *.elf
+*.d
+
+#Eclipse Files 
+*.cproject
+*.settings
+*.mk
 
 # Precompiled Headers
 *.gch

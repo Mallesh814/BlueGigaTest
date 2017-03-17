@@ -15,6 +15,7 @@
 #include "driverlib/gpio.h"
 #include "driverlib/uart.h"
 
+	uint32_t *mem_cpy(void* ,const void* , uint32_t );
 	char* str_ncpy(char* ,char* ,uint32_t );
     uint32_t str_len(char*);
 
@@ -22,6 +23,6 @@
 	void dec_ascii(uint32_t,char*);
 	uint32_t ascii_dec(char* ,uint32_t*);
 	uint32_t ascii_hex_dec(char*,uint32_t*);
-	uint32_t int_hex_ascii(char* , uint32_t);
+	uint32_t int_hex_ascii(char* , uint8_t);
 
 #endif /* PARSER_H_ */

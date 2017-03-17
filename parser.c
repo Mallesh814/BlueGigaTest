@@ -6,7 +6,46 @@ char ascii[6]="\0";
 uint32_t hex_addr = 0;
 
 
-
+uint32_t *mem_cpy(void* dest_memory_address, const void* src_memory_address, uint32_t number_of_bytes)
+{
+    uint32_t i;
+    
+	if( ((uint32_t)dest_memory_address % 4 == 0) &&
+        ((uint32_t)src_memory_address % 4 == 0) &&
+            number_of_bytes % 4 == 0)
+    {
+        uint32_t *dest = dest_memory_address;
+        const uint32_t *src = src_memory_address;
+        
+        for(i=0; i < number_of_bytes/4 ; i++){
+            dest[i] = src[i];
+        }
+    }
+    else {
+        uint8_t *dest = dest_memory_address;
+        const uint8_t *src = src_memory_address;
+        
+        for(i=0; i < number_of_bytes ; i++){
+            dest[i] = src[i];
+        }
+    }
+    
+    return dest_memory_address;
+}
+/*
+	for(;number_of_bytes >= 4;number_of_bytes -= 4)
+	{
+		*((uint32_t *)dest) = *((uint32_t *)src);
+		dest += 4;		src += 4;
+	}
+	for(;number_of_bytes;number_of_bytes--)
+	{
+		*((char *)dest) = *((char *)src);
+		dest++;		src++;
+	}
+		return 1;
+}
+*/
 char* str_ncpy(char* dest,char* src,uint32_t n)
 		{
 			uint32_t len1=0,len2=0,i;
@@ -36,7 +75,31 @@ void transfer(char* data, uint32_t uart_base){
 		}
 
 }
+/*
+int serialWrite(uint32_t uart_base, char* data, uint32_t len){
+		while (len){
+			UARTCharPut(uart_base, *data);
+			len--;
+			data++;
+		}
+		return 1;
+}
 
+int serialRead(uint32_t uart_base, char* data, uint32_t len){
+	int32_t i32Data = 0;
+		while (len){
+			i32Data = UARTCharGetNonBlocking(uart_base);
+			if(i32Data < 0)
+				return -1;
+			else{
+				*data = i32Data & 0x00FF;
+			}
+			len--;
+			data++;
+		}
+		return 1;
+}
+*/
 void dec_ascii(uint32_t num,char*pasc){
 	uint32_t j;
 	j=num;
@@ -82,11 +145,12 @@ uint32_t ascii_hex_dec(char* asc,uint32_t* num)										// blink determines the
 	*num = hex;
 	return 1;
 }
-uint32_t int_hex_ascii(char* hex_str, uint32_t num)
+
+uint32_t int_hex_ascii(char* hex_str, uint8_t num)
 {
 	uint32_t i=0;
-	char str[11]="0x00000000";
-	char *pstr = &str[9];
+	char str[]="00";
+	char *pstr = &str[1];
 	*hex_str = '\0';//	*(hex_str+1) = 'x';	*(hex_str+2) = '\0';
 
 	while(num){
@@ -99,7 +163,7 @@ uint32_t int_hex_ascii(char* hex_str, uint32_t num)
 		num = num/16;
 		pstr--;
 	}
-	str_cpy(hex_str,str);
+	str_ncpy(hex_str,str,3);
 	return 1;
 }
 

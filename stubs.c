@@ -8,6 +8,9 @@
  ****************************************************************************/
 
 #include "cmd_def.h"
+#include "parser.h"
+#include "inc/hw_memmap.h"
+
 void ble_default(const void*v)
 {
 }
@@ -52,10 +55,12 @@ void ble_evt_system_protocol_error(const struct ble_msg_system_protocol_error_ev
 
 void ble_rsp_system_reset(const void* nul)
 {
+	transfer("ble_rsp_system_reset\n\r", UART0_BASE);
 }
 
 void ble_rsp_system_hello(const void* nul)
 {
+	transfer("ble_rsp_system_hello\n\r", UART0_BASE);
 }
 
 void ble_rsp_system_address_get(const struct ble_msg_system_address_get_rsp_t *msg)
@@ -292,6 +297,17 @@ void ble_rsp_gap_set_privacy_flags(const void* nul)
 
 void ble_rsp_gap_set_mode(const struct ble_msg_gap_set_mode_rsp_t *msg)
 {
+	if(msg->result == 0){
+		transfer("Mode Set Successful\n\r", UART0_BASE);
+	}
+	else{
+		char num[10]="\0";
+		transfer("Error in Setting Mode Code:", UART0_BASE);
+        dec_ascii(msg->result , num);
+        transfer(num, UART0_BASE);
+        transfer("\n\r", UART0_BASE);
+
+	}
 }
 
 void ble_rsp_gap_discover(const struct ble_msg_gap_discover_rsp_t *msg)
@@ -444,6 +460,8 @@ void ble_rsp_test_debug(const struct ble_msg_test_debug_rsp_t *msg)
 
 void ble_evt_system_boot(const struct ble_msg_system_boot_evt_t *msg)
 {
+	transfer("ble_evt_system_boot\n\r", UART0_BASE);
+
 }
 
 void ble_evt_system_debug(const struct ble_msg_system_debug_evt_t *msg)
@@ -469,11 +487,11 @@ void ble_evt_system_no_license_key(const void* nul)
 void ble_evt_flash_ps_key(const struct ble_msg_flash_ps_key_evt_t *msg)
 {
 }
-
+/*
 void ble_evt_attributes_value(const struct ble_msg_attributes_value_evt_t *msg)
 {
 }
-
+*/
 void ble_evt_attributes_user_read_request(const struct ble_msg_attributes_user_read_request_evt_t *msg)
 {
 }

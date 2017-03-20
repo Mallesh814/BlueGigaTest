@@ -24,12 +24,12 @@
 #include <stdint.h>
 #include "uart.h"
 
-uint32_t serial_handle;
+uint32_t bleConsole;
 
 int uart_tx(int len,unsigned char *data)
 {
     while (len){
-		UARTCharPut(serial_handle, *data);
+		UARTCharPut(bleConsole, *data);
 		len--;
 		data++;
 	}
@@ -45,7 +45,7 @@ int uart_rx(int len,unsigned char *data,int timeout_ms)
     while(len)
     {
 
-    	rread = UARTCharGetNonBlocking(serial_handle);
+    	rread = UARTCharGetNonBlocking(bleConsole);
     	if(rread < 0) {
     		trials++;
     		if(trials < timeout_ms)

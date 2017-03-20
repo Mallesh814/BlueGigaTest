@@ -4,25 +4,34 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../ble113.c \
+../cmd_def.c \
 ../configs.c \
 ../main.c \
 ../parser.c \
 ../startup_gcc.c \
-../uartstdio.c 
+../stubs.c \
+../uart.c 
 
 OBJS += \
+./ble113.o \
+./cmd_def.o \
 ./configs.o \
 ./main.o \
 ./parser.o \
 ./startup_gcc.o \
-./uartstdio.o 
+./stubs.o \
+./uart.o 
 
 C_DEPS += \
+./ble113.d \
+./cmd_def.d \
 ./configs.d \
 ./main.d \
 ./parser.d \
 ./startup_gcc.d \
-./uartstdio.d 
+./stubs.d \
+./uart.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

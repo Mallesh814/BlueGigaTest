@@ -6,10 +6,7 @@
  */
 #include "configs.h"
 
-extern void isr_uart();// rst_handler contains the code to run on reset.
-extern void isr_uart1();// rst_handler contains the code to run on reset.
-extern void isr_uart3();// rst_handler contains the code to run on reset.
-
+extern void Timer0AIntHandler(void);
 
 void InitI2C(uint32_t BASE, bool mode)
 {
@@ -80,149 +77,153 @@ void InitI2C(uint32_t BASE, bool mode)
 
 }
 
-void InitConsole()
+uint32_t InitConsole(uint32_t BASE, uint32_t baudRate)
 {
 
-	uint32_t status = 0;
+	uint32_t SYSCTL_PERIPH_UART, SYSCTL_PERIPH_GPIO;
+	uint32_t CONF_PIN_RX, CONF_PIN_TX;
+	uint32_t GPIO_PORT_BASE;
+	uint32_t PIN_RX, PIN_TX;
+	switch(BASE)
+	{
+		case UART0_BASE:SYSCTL_PERIPH_UART  =  SYSCTL_PERIPH_UART0;
+						SYSCTL_PERIPH_GPIO =  SYSCTL_PERIPH_GPIOA;
+						CONF_PIN_RX = GPIO_PA0_U0RX;
+						CONF_PIN_TX = GPIO_PA1_U0TX;
+						GPIO_PORT_BASE = GPIO_PORTA_BASE;
+						PIN_RX = GPIO_PIN_0;
+						PIN_TX = GPIO_PIN_1;
+						break;
+
+		case UART1_BASE:SYSCTL_PERIPH_UART  =  SYSCTL_PERIPH_UART1;
+						SYSCTL_PERIPH_GPIO =  SYSCTL_PERIPH_GPIOB;
+						CONF_PIN_RX = GPIO_PB0_U1RX;
+						CONF_PIN_TX = GPIO_PB1_U1TX;
+						GPIO_PORT_BASE = GPIO_PORTB_BASE;
+						PIN_RX = GPIO_PIN_0;
+						PIN_TX = GPIO_PIN_1;
+						break;
+
+		case UART2_BASE:SYSCTL_PERIPH_UART  =  SYSCTL_PERIPH_UART2;
+						SYSCTL_PERIPH_GPIO =  SYSCTL_PERIPH_GPIOD;
+						CONF_PIN_RX = GPIO_PD6_U2RX;
+						CONF_PIN_TX = GPIO_PD7_U2TX;
+						GPIO_PORT_BASE = GPIO_PORTD_BASE;
+						PIN_RX = GPIO_PIN_6;
+						PIN_TX = GPIO_PIN_7;
+						break;
+
+		case UART3_BASE:SYSCTL_PERIPH_UART  =  SYSCTL_PERIPH_UART3;
+						SYSCTL_PERIPH_GPIO =  SYSCTL_PERIPH_GPIOC;
+						CONF_PIN_RX = GPIO_PC6_U3RX;
+						CONF_PIN_TX = GPIO_PC7_U3TX;
+						GPIO_PORT_BASE = GPIO_PORTC_BASE;
+						PIN_RX = GPIO_PIN_6;
+						PIN_TX = GPIO_PIN_7;
+						break;
+
+		case UART4_BASE:SYSCTL_PERIPH_UART  =  SYSCTL_PERIPH_UART4;
+						SYSCTL_PERIPH_GPIO =  SYSCTL_PERIPH_GPIOC;
+						CONF_PIN_RX = GPIO_PC4_U4RX;
+						CONF_PIN_TX = GPIO_PC5_U4TX;
+						GPIO_PORT_BASE = GPIO_PORTC_BASE;
+						PIN_RX = GPIO_PIN_4;
+						PIN_TX = GPIO_PIN_5;
+						break;
+
+		case UART5_BASE:SYSCTL_PERIPH_UART  =  SYSCTL_PERIPH_UART5;
+						SYSCTL_PERIPH_GPIO =  SYSCTL_PERIPH_GPIOE;
+						CONF_PIN_RX = GPIO_PE4_U5RX;
+						CONF_PIN_TX = GPIO_PE5_U5TX;
+						GPIO_PORT_BASE = GPIO_PORTE_BASE;
+						PIN_RX = GPIO_PIN_4;
+						PIN_TX = GPIO_PIN_5;
+						break;
+
+		case UART6_BASE:SYSCTL_PERIPH_UART  =  SYSCTL_PERIPH_UART6;
+						SYSCTL_PERIPH_GPIO =  SYSCTL_PERIPH_GPIOD;
+						CONF_PIN_RX = GPIO_PD4_U6RX;
+						CONF_PIN_TX = GPIO_PD5_U6TX;
+						GPIO_PORT_BASE = GPIO_PORTD_BASE;
+						PIN_RX = GPIO_PIN_4;
+						PIN_TX = GPIO_PIN_5;
+						break;
+
+		case UART7_BASE:SYSCTL_PERIPH_UART  =  SYSCTL_PERIPH_UART7;
+						SYSCTL_PERIPH_GPIO =  SYSCTL_PERIPH_GPIOE;
+						CONF_PIN_RX = GPIO_PE0_U7RX;
+						CONF_PIN_TX = GPIO_PE1_U7TX;
+						GPIO_PORT_BASE = GPIO_PORTE_BASE;
+						PIN_RX = GPIO_PIN_0;
+						PIN_TX = GPIO_PIN_1;
+						break;
+
+		default:		while(1);
+	}
+
 
 	//
     // Enable GPIO port A which is used for UART0 pins.
     // TODO: change this to whichever GPIO port you are using.
     //
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIO);
 
 	//
     // Enable UART0 so that we can configure the clock.
     //
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART);
 
     //
     // Configure the pin muxing for UART0 functions on port A0 and A1.
     // This step is not necessary if your part does not support pin muxing.
     // TODO: change this to select the port/pin you are using.
     //
-	GPIOPinConfigure(GPIO_PA0_U0RX);
-	GPIOPinConfigure(GPIO_PA1_U0TX);
+	GPIOPinConfigure(CONF_PIN_RX);
+	GPIOPinConfigure(CONF_PIN_TX);
 
     //
     // Select the alternate (UART) function for these pins.
     // TODO: change this to select the port/pin you are using.
     //
-	GPIOPinTypeUART(GPIO_PORTA_BASE,GPIO_PIN_0 | GPIO_PIN_1);
+	GPIOPinTypeUART(GPIO_PORT_BASE,PIN_RX | PIN_TX);
 
     //
     // Initialize the UART for console I/O.
     //
-	UARTConfigSetExpClk(UART0_BASE, SysCtlClockGet(), 115200,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
-	UARTFIFODisable(UART0_BASE);
+	UARTConfigSetExpClk(BASE, SysCtlClockGet(), baudRate,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
+	UARTFIFODisable(BASE);
 
-	UARTFIFOEnable(UART0_BASE);
-	UARTFIFOLevelSet(UART0_BASE,UART_FIFO_TX7_8,UART_FIFO_RX1_8);
+	return BASE;
 
-	UARTIntRegister(UART0_BASE,isr_uart);
-	IntEnable(INT_UART0);
-
-	UARTIntEnable(UART0_BASE,UART_INT_RX | UART_INT_RT);
-
-	status = UARTIntStatus(UART0_BASE,true);
-	UARTIntClear(UART0_BASE,status);
 }
 
+void TimerConfig(uint32_t freq){
 
-void InitConsole1()
-{
-
-	uint32_t status = 0;
-
-	//
-    // Enable GPIO port A which is used for UART0 pins.
-    // TODO: change this to whichever GPIO port you are using.
-    //
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-
-	//
-    // Enable UART0 so that we can configure the clock.
-    //
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
 
     //
-    // Configure the pin muxing for UART0 functions on port A0 and A1.
-    // This step is not necessary if your part does not support pin muxing.
-    // TODO: change this to select the port/pin you are using.
+    // The Timer0 peripheral must be enabled for use.
     //
-	GPIOPinConfigure(GPIO_PB0_U1RX);
-	GPIOPinConfigure(GPIO_PB1_U1TX);
+    TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);
 
     //
-    // Select the alternate (UART) function for these pins.
-    // TODO: change this to select the port/pin you are using.
+    // Set the Timer0B load value to 0.625ms.
     //
-	GPIOPinTypeUART(GPIO_PORTB_BASE,GPIO_PIN_0 | GPIO_PIN_1);
+    TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / freq);
 
     //
-    // Initialize the UART for console I/O.
+    // Configure the Timer0B interrupt for timer timeout.
     //
-	UARTConfigSetExpClk(UART1_BASE, SysCtlClockGet(), 9600,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
-	UARTFIFODisable(UART1_BASE);
+    TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 
-	//	UARTFIFOEnable(UART0_BASE);
-	//	UARTFIFOLevelSet(UART0_BASE,UART_FIFO_TX7_8,UART_FIFO_RX1_8);
+    TimerIntRegister(TIMER0_BASE, TIMER_A, Timer0AIntHandler);
+    //
+    // Enable the Timer0B interrupt on the processor (NVIC).
+    //
+    IntEnable(INT_TIMER0A);
+    //
+    // Enable Timer0B.
+    //
+    TimerEnable(TIMER0_BASE, TIMER_A );
 
-	UARTIntRegister(UART1_BASE,isr_uart1);
-	IntEnable(INT_UART1);
-
-	UARTIntEnable(UART1_BASE,UART_INT_RX);
-
-	status = UARTIntStatus(UART1_BASE,true);
-	UARTIntClear(UART1_BASE,status);
 }
-
-void InitConsole3()
-{
-
-	uint32_t status = 0;
-
-	//
-    // Enable GPIO port A which is used for UART0 pins.
-    // TODO: change this to whichever GPIO port you are using.
-    //
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
-
-	//
-    // Enable UART0 so that we can configure the clock.
-    //
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART3);
-
-    //
-    // Configure the pin muxing for UART0 functions on port A0 and A1.
-    // This step is not necessary if your part does not support pin muxing.
-    // TODO: change this to select the port/pin you are using.
-    //
-	GPIOPinConfigure(GPIO_PC6_U3RX);
-	GPIOPinConfigure(GPIO_PC7_U3TX);
-
-    //
-    // Select the alternate (UART) function for these pins.
-    // TODO: change this to select the port/pin you are using.
-    //
-	GPIOPinTypeUART(GPIO_PORTC_BASE,GPIO_PIN_6 | GPIO_PIN_7);
-
-    //
-    // Initialize the UART for console I/O.
-    //
-	UARTConfigSetExpClk(UART3_BASE, SysCtlClockGet(), 115200,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
-	UARTFIFODisable(UART3_BASE);
-
-	UARTFIFOEnable(UART3_BASE);
-	UARTFIFOLevelSet(UART3_BASE,UART_FIFO_TX7_8,UART_FIFO_RX6_8);
-
-	UARTIntRegister(UART3_BASE,isr_uart3);
-	IntEnable(INT_UART3);
-
-	UARTIntEnable(UART3_BASE,UART_INT_RX | UART_INT_RT );
-
-	status = UARTIntStatus(UART3_BASE,true);
-	UARTIntClear(UART3_BASE,status);
-}
-
-

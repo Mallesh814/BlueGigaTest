@@ -19,11 +19,10 @@
 #include "driverlib/i2c.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/i2c.h"
+#include "driverlib/timer.h"
 
 void InitI2C(uint32_t , bool);
-void InitConsole();
-void InitConsole1();
-void InitConsole3();
-
+uint32_t InitConsole(uint32_t , uint32_t );
+void TimerConfig(uint32_t );
 
 #endif /* CONFIGS_H_ */

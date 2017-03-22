@@ -13,14 +13,11 @@
 #include "parser.h"
 #include "ble113.h"
 
-
-
 uint8_t uart_char = 0, call_parser = 0, tick = 0;
 uint8_t uart_char3 = 0, ble_data = 0, console_event = 0;
 
 void isr_debugConsole();// rst_handler contains the code to run on reset.
 void isr_bleConsole();
-
 
 uint32_t debugConsole;
 extern uint32_t bleConsole;
@@ -63,7 +60,6 @@ int main(void)
 		0x09,0x18, // data (0x02 | 0x04 = 0x06, general discoverable + BLE only, no BR+EDR)
 
     };
-
 
 	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);

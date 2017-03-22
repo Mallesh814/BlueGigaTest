@@ -10,8 +10,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "driverlib/gpio.h"
 #include "inc/hw_memmap.h"
+#include "driverlib/gpio.h"
 #include "cmd_def.h"
 #include "uart.h"
 #include "parser.h"

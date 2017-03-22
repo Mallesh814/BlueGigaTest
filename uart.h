@@ -1,6 +1,10 @@
 #ifndef UART_H
 #define UART_H
 
+#include <stdint.h>
+#include <stdbool.h>
+#include "driverlib/uart.h"
+
 void uart_list_devices();
 int uart_find_serialport(char *name);
 int uart_open(char *port);

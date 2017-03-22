@@ -6,8 +6,9 @@
 *.d
 
 #Eclipse Files 
-*.cproject
-*.settings
+Debug
+.cproject
+.settings
 *.mk
 
 # Precompiled Headers
